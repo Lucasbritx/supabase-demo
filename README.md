@@ -1,75 +1,84 @@
-# React + TypeScript + Vite
+# Supabase Realtime Todos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small React + TypeScript + Vite demo that stores todos in Supabase and updates the UI through Supabase Realtime whenever rows change.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Lists todos from a Supabase `todos` table.
+- Adds new todos.
+- Toggles todo completion.
+- Subscribes to Postgres changes and refreshes automatically across browser sessions.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- TypeScript
+- Vite
+- Supabase JavaScript client
+- Supabase Postgres, Row Level Security, and Realtime
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Install dependencies:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Create a Supabase project, then add the app environment variables in `.env`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```sh
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+You can find these values in the Supabase dashboard under project settings.
 
+## Database
+
+Run the SQL in [src/sqls/todos.sql](src/sqls/todos.sql) in the Supabase SQL editor. It creates the `todos` table, enables Row Level Security, and adds public demo policies for reading, inserting, and updating todos.
+
+Because this is a public demo, the policies allow anonymous users to read, create, and update every todo. Tighten these policies before using this pattern in a production app.
+
+## Realtime
+
+The app listens for changes on the `public.todos` table. Enable Realtime for that table in the Supabase dashboard under Database replication, or add the table to the Realtime publication with SQL:
+
+```sql
+alter publication supabase_realtime add table todos;
+```
+
+## Development
+
+Start the Vite dev server:
+
+```sh
+npm run dev
+```
+
+Build for production:
+
+```sh
+npm run build
+```
+
+Preview the production build:
+
+```sh
+npm run preview
+```
+
+Run linting:
+
+```sh
+npm run lint
+```
+
+## Project Structure
+
+```text
+src/
+  App.tsx          React todo UI and Supabase Realtime subscription
+  supabase.ts     Supabase client configured from Vite env variables
+  sqls/todos.sql  Database schema and demo RLS policies
 ```
