@@ -2,6 +2,10 @@
 
 A small React + TypeScript + Vite demo that stores todos in Supabase and updates the UI through Supabase Realtime whenever rows change.
 
+## Demo
+
+[Watch the demo video](Supabase-demo.mov)
+
 ## What It Does
 
 - Lists todos from a Supabase `todos` table.
